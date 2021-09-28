@@ -36,12 +36,15 @@ def unpack(msg):
 
 
 while True:
-    pass
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.connect((HOST, PORT))
         s.sendall(b'status')
         data = s.recv(1024)
 
+    header, message = decode_edn_msg(data)
+    beat = message['beat']
+
     print('Received', repr(data))
-    print('Decoded', decode_edn_msg(data))
+    print('Header', header)
+    print('Message', message)
     input()
