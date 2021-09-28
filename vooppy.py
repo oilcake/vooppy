@@ -1,7 +1,7 @@
 import argparse
 
 import cv2
-from clip import Clip
+from player.clip import Clip
 from files.files import filter_files
 import random
 
