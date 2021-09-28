@@ -1,9 +1,12 @@
 import argparse
+import random
 
 import cv2
+
 from player.clip import Clip
 from files.files import filter_files
-import random
+from Link.client import Client
+from Link.sync import Sync, Frame_watcher
 
 
 parser = argparse.ArgumentParser(description='arguments')
@@ -12,30 +15,33 @@ args = parser.parse_args()
 
 folder = args.input
 
+link = Client()
+sync = Sync(link.bpm, (4, 4))
+watcher = Frame_watcher()
 
 files = list(filter_files(folder))
 while True:
     index = random.randint(0, len(files))
-    print(index)
     file = files[index]
     clip = Clip(file)
+    pattern = int(sync.pattern(clip.duration) / 2)
     print(clip)
     print('total frames', clip.framecount)
-    clip.loop(2)
-    # clip.play(3)
-
-
-# Create a VideoCapture object and read from input file
-# clips = map(cv2.VideoCapture, files)
-
-# for clip in clips:
-#     player = Clip(clip)
-#     player.play(3)
-#     print('3 was played')
-#     input()
-    # Press Q on keyboard to  exit
-    # if cv2.waitKey(1) & 0xFF == ord('q'):
-
+    print('pttrn lngth is', pattern)
+    while True:
+        link.ping()
+        beat = link.beat % pattern
+        position = beat / pattern
+        frame = clip.framecount * position
+        if watcher.nextframe(frame):
+            next_frame = clip.play(frame)
+            if next_frame & 0xFF == ord('q'):
+                break
+            elif next_frame & 0xFF == ord('['):
+                pattern = pattern * 2
+            elif next_frame & 0xFF == ord(']'):
+                pattern = pattern / 2
+    clip.close()
 
 # Closes all the frames
 cv2.destroyAllWindows()
