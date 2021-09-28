@@ -1,25 +1,28 @@
+import argparse
+
 import cv2
 import os
-import click
 
 SUPPORTED = ['.mp4', '.mpg', '.mov', '.avi', '.wmv', '.mkv']
 
+parser = argparse.ArgumentParser(description='arguments')
+parser.add_argument("input", help="Input directory", type=str)
+args = parser.parse_args()
 
-@click.command()
-@click.argument('input')
-def filter_files(input):
-    path = os.path.abspath(input)
+folder = args.input
+
+
+def filter_files(path_to_files):
+    path = os.path.abspath(path_to_files)
     for root, dirs, files in os.walk(path):
         for file in files:
-            if is_supported(file):
+            if supported(file):
                 yield(os.path.join(root, file))
 
 
-def is_supported(file):
+def supported(file):
     filename, file_extension = os.path.splitext(file)
-    print(file_extension)
-    # return file_extension in SUPPORTED
-    return True
+    return file_extension in SUPPORTED
 
 
 def play(cap):
@@ -46,10 +49,11 @@ def play(cap):
             return cap.release()
 
 
-folder = filter_files()
+files = filter_files(folder)
+
 
 # Create a VideoCapture object and read from input file
-caps = map(cv2.VideoCapture, folder)
+caps = map(cv2.VideoCapture, files)
 
 for cap in caps:
     if cap.isOpened():
