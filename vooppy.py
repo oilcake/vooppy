@@ -1,5 +1,6 @@
 import argparse
 import random
+import time
 
 import cv2
 
@@ -41,6 +42,8 @@ while True:
                 pattern = pattern * 2
             elif next_frame & 0xFF == ord(']'):
                 pattern = pattern / 2
+        still = 1 / 60
+        time.sleep(float(still))
     clip.close()
 
 # Closes all the frames
