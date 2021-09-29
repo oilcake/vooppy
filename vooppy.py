@@ -21,7 +21,7 @@ watcher = Frame_watcher()
 
 files = list(filter_files(folder))
 while True:
-    index = random.randint(0, len(files))
+    index = random.randint(0, len(files) - 1)
     file = files[index]
     clip = Clip(file)
     pattern = int(sync.pattern(clip.duration) / 2)

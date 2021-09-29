@@ -21,8 +21,9 @@ class Clip():
             if ret:
                 # Display the resulting frame
                 cv2.namedWindow('Frame', cv2.WINDOW_FREERATIO)
-                image = cv2.resize(frame, (960, 540))
-                cv2.imshow('Frame', image)
+                # image = cv2.resize(frame, (960, 540))
+                # cv2.setWindowProperty('Frame', cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+                cv2.imshow('Frame', frame)
                 cv2.setWindowProperty(
                     'Frame',
                     cv2.WND_PROP_TOPMOST, 1,
