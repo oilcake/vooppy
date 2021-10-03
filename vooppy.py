@@ -2,8 +2,6 @@ import argparse
 import random
 import time
 
-import cv2
-
 from player.clip import Clip
 from files.files import filter_files
 from Link.client import Client
@@ -25,7 +23,7 @@ while True:
     index = random.randint(0, len(files) - 1)
     file = files[index]
     clip = Clip(file)
-    pattern = int(sync.pattern(clip.duration) / 2)
+    pattern = int(sync.pattern(clip.duration))
     print(clip)
     print('total frames', clip.framecount)
     print('pttrn lngth is', pattern)
@@ -34,7 +32,7 @@ while True:
         beat = link.beat % pattern
         position = beat / pattern
         frame = clip.framecount * position
-        if watcher.nextframe(frame):
+        if watcher.new_frame_is_not_equal_to(frame):
             next_frame = clip.play(frame)
             if next_frame & 0xFF == ord('q'):
                 break
@@ -45,6 +43,3 @@ while True:
         still = 1 / 60
         time.sleep(float(still))
     clip.close()
-
-# Closes all the frames
-cv2.destroyAllWindows()
