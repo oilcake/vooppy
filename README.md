@@ -7,5 +7,5 @@ it needs opencv installed and Carabiner running on 127.0.0.1 port 17000 to get L
 Usage
 
 ```
-python vooppy.com path/to/videos/folder
+python vooppy.py path/to/videos/folder
 ```
