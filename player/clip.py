@@ -22,12 +22,15 @@ class Clip():
         cv2.namedWindow(self.window_name, cv2.WINDOW_KEEPRATIO)
         cv2.moveWindow(self.window_name, 40, 30)  # Move it to (40,30)
 
-    def resize(self):
+    def resize(self, frame):
         width = self.clip.get(3)  # float `width`
         height = self.clip.get(4)  # float `height`
         ratio = self.window_width / width
-        width = width * ratio
-        height = height * ratio
+        width = int(width * ratio)
+        height = int(height * ratio)
+        dim = (width, height)
+        resize = cv2.resize(frame, dim, interpolation=cv2.INTER_AREA)
+        return resize
 
     def play(self, frame_):
         if not frame_ > self.framecount:
@@ -35,7 +38,7 @@ class Clip():
             ret, frame = self.clip.read()
             if ret:
                 # Display the resulting frame
-                cv2.imshow(self.window_name, frame)
+                cv2.imshow(self.window_name, self.resize(frame))
                 cv2.setWindowProperty(
                     self.window_name,
                     cv2.WND_PROP_TOPMOST, 1,
