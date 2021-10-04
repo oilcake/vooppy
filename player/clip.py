@@ -4,8 +4,8 @@ import cv2
 class Clip():
     framecount = 0
     window_name = 'Frame'
-    window_width = 140
-    window_height = 90
+    window_width = 200
+    window_height = (window_width / 16) * 9
 
     def __init__(self, clip):
         self.filename = clip
