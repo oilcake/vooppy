@@ -3,12 +3,14 @@ import os
 SUPPORTED = ['.mp4', '.mpg', '.mov', '.avi', '.wmv', '.mkv']
 
 
-def filter_files(path_to_files):
+def filter_files(path_to_files, prefix):
     path = os.path.abspath(path_to_files)
     for root, dirs, files in os.walk(path):
         for file in files:
             if supported(file):
-                yield(os.path.join(root, file))
+                if file.startswith(prefix):
+                    print(file)
+                    yield(os.path.join(root, file))
 
 
 def supported(file):

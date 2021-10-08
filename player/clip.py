@@ -2,10 +2,8 @@ import cv2
 
 
 class Clip():
-    framecount = 0
-    window_name = 'Frame'
-    window_width = 200
-    window_height = (window_width / 16) * 9
+    framecount = None
+    dim = (0, 0)
 
     def __init__(self, clip):
         self.filename = clip
@@ -16,34 +14,19 @@ class Clip():
         # get number of frames in video
         self.framecount = int(self.clip.get(cv2.CAP_PROP_FRAME_COUNT))
         self.find_duration()
-        self.window()
+        self.get_dimensions()
 
-    def window(self):
-        cv2.namedWindow(self.window_name, cv2.WINDOW_KEEPRATIO)
-        cv2.moveWindow(self.window_name, 40, 30)  # Move it to (40,30)
-
-    def resize(self, frame):
+    def get_dimensions(self):
         width = self.clip.get(3)  # float `width`
         height = self.clip.get(4)  # float `height`
-        ratio = self.window_width / width
-        width = int(width * ratio)
-        height = int(height * ratio)
-        dim = (width, height)
-        resize = cv2.resize(frame, dim, interpolation=cv2.INTER_AREA)
-        return resize
+        self.dim = (width, height)
 
     def play(self, frame_):
         if not frame_ > self.framecount:
             self.clip.set(cv2.CAP_PROP_POS_FRAMES, frame_)
             ret, frame = self.clip.read()
             if ret:
-                # Display the resulting frame
-                cv2.imshow(self.window_name, self.resize(frame))
-                cv2.setWindowProperty(
-                    self.window_name,
-                    cv2.WND_PROP_TOPMOST, 1,
-                )
-                return cv2.waitKey(1)
+                return frame
 
     def loop(self, rate):
         i = 0
@@ -74,8 +57,7 @@ class Clip():
 
         # calculate dusration of the video
         seconds = self.framecount / self.fps
-        self.duration = seconds * 2
-        print("duration in seconds:", self.duration)
+        self.duration = seconds * 4
 
     def __repr__(self):
         return(self.filename)
