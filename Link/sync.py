@@ -26,3 +26,22 @@ class Frame_watcher:
     def new_frame_is_not_equal_to(self, frame):
         yield frame != self.frame
         self.frame = frame
+
+
+class Direction:
+    direction = 1  # defaults to forward
+
+    def __init__(self):
+        pass
+
+    def choose_direction(self, direction):
+        self.direction = direction
+
+    def move(self, ping, pattern):
+        if self.direction == 2:
+            pattern = pattern * 2
+            print('ping', ping)
+            ping = abs(ping - 1)
+        boom = ping % pattern
+        position = boom / pattern
+        return position
