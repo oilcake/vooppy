@@ -1,23 +1,26 @@
 import os
+import itertools
+import random
 
-from fuzzywuzzy import process
+from thefuzz import process
+
 
 EXCLUSIONS = ['.DS_Store', '.com.greenworldsoft.syncfolderspro']
 SUPPORTED = ['.mp4', '.mpg', '.mov', '.avi', '.wmv', '.mkv']
 
 
-def unpack_tuple(pair):
-    # print('in', type(pair))
-    (name, relevance) = (pair)
-    # print('unp', name)
+def get_len(iter):
+    return len(list(iter))
+
+
+def unpack_tuple(sometuple):
+    (name, relevance) = (sometuple)
     return str(name)
 
 
 def unpack_processed(list):
     for unit in list:
-        # print(unit)
         unpacked = unpack_tuple(unit)
-        # print(unpacked)
         yield unpacked
 
 
@@ -28,20 +31,17 @@ def filter_with_prefix(path_to_files, prefix, file, with_fuzz):
         return found_by_name
     coll = []
     found = filter_files(path, prefix)
-    get_it = process.extract(file, found, limit=3)
-    # print(get_it)
+    file_mask = os.path.basename(file)
+    print(file_mask)
+    get_it = process.extract(file, found, limit=30)
     for name_ in get_it:
-        # print(type(name_), name_)
         name = unpack_tuple(name_)
-        # print(type(name), name)
         coll.append(name)
-    # coll = list(map(unpack_processed, get_it))
-    # print(coll)
-    # print('fuzz list', list(coll))
     if len(list(coll)) == 0:
         found_by_name = filter_files(path, prefix)
     found_by_name = coll
-    print(found_by_name)
+    for item in found_by_name:
+        print(item)
     return found_by_name
 
 
@@ -53,6 +53,37 @@ def filter_files(path, prefix):
                     yield(os.path.join(root, file))
 
 
+def get_folders(path_to_dirs):
+    folders = os.listdir(path_to_dirs)
+    path = os.path.abspath(path_to_dirs)
+    cat = map(os.path.join, itertools.repeat(path), folders)
+
+    return cat
+
+
 def supported(file):
     filename, file_extension = os.path.splitext(file)
     return file_extension in SUPPORTED
+
+
+def folder(pre_folder):
+    fld = os.listdir(pre_folder)
+    return fld
+
+
+def best_match(file, folder):
+    files = filter_files(folder, '')
+    match = process.extract(file, files, limit=10)
+    diff_files = filter(lambda x: x != (file, 100), match)
+    files = list(map(unpack_tuple, diff_files))
+    index = new_index(list(files))
+    name = files[index]
+    return name
+
+
+def new_index(files):
+    index = 0
+    rnd_index = index
+    while rnd_index == index:
+        index = random.randint(0, len(files) - 1)
+    return index

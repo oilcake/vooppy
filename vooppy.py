@@ -1,37 +1,53 @@
 import argparse
 import random
 import time
-
-from fuzzywuzzy import process
+import json
 
 from player.clip import Clip
 from player.window import Window
-from files.files import filter_files, filter_with_prefix
+from files.files import filter_files, filter_with_prefix, best_match, new_index
 from Link.client import Client
 from Link.sync import Sync, Frame_watcher, Direction
 
 
+NO = ['/Users/Oilcake/Documents/Dev/vooppy/samples/.DS_Store']
 PREFIXES = ['', 'A', 'B', 'C', 'D']
+VOOP_SET = '/Volumes/STUFF/[PROJECTS]/VD_Patching/VOOP/PROTOTYPE Project/set.json'
+
 
 parser = argparse.ArgumentParser(description='arguments')
 parser.add_argument("input", help="Input directory", type=str)
 args = parser.parse_args()
 
-folder = args.input
 
+def json_write(voop_set, data):
+    outfile = open(voop_set, 'w')
+    json.dump(data, outfile)
+
+
+def get_pretty_print(json_object):
+    pretty = json.loads(json_object, sort_keys=True, indent=4, separators=(',', ': '))
+    print(pretty)
+    return pretty
+
+
+folder = args.input
 link = Client()
 sync = Sync(link.bpm, (4, 4))
 watcher = Frame_watcher()
 direction = Direction()
 
-prefix = ''
-
-files = list(filter_files(folder, prefix))
 
 window = Window()
+
+prefix = ''
+files = list(filter_files(folder, prefix))
+
+
+index = new_index(files)
+file = files[index]
+
 while True:
-    index = random.randint(0, len(files) - 1)
-    file = files[index]
     clip = Clip(file)
     pattern = int(sync.pattern(clip.duration))
     print(clip)
@@ -44,10 +60,12 @@ while True:
         if watcher.new_frame_is_not_equal_to(frame):
             next_frame = window.show(clip.play(frame), clip.dim)
             if next_frame & 0xFF == ord('q'):
+                index = new_index(files)
+                file = files[index]
                 break
             elif next_frame & 0xFF == ord('z'):
-                prefix = PREFIXES[0]
-                files = list(filter_with_prefix(folder, prefix, file, 1))
+                closest = best_match(file, folder)
+                file = closest
                 break
             elif next_frame & 0xFF == ord('['):
                 pattern = pattern * 2
@@ -62,11 +80,10 @@ while True:
             elif next_frame & 0xFF == ord('/'):
                 direction.direction = 2
             elif next_frame & 0xFF in range(48, 52):
-                number = next_frame - 48
-                prefix = PREFIXES[number]
+                prefix_index = next_frame - 48
+                prefix = PREFIXES[prefix_index]
                 files = list(filter_with_prefix(folder, prefix, file, 0))
-                break
 
-        still = 1 / 20
+        still = 1 / 55
         time.sleep(float(still))
-    clip.close()
+    # clip.close()
