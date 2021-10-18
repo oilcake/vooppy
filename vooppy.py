@@ -1,5 +1,4 @@
 import argparse
-import random
 import time
 import json
 
@@ -10,9 +9,7 @@ from Link.client import Client
 from Link.sync import Sync, Frame_watcher, Direction
 
 
-NO = ['/Users/Oilcake/Documents/Dev/vooppy/samples/.DS_Store']
 PREFIXES = ['', 'A', 'B', 'C', 'D']
-VOOP_SET = '/Volumes/STUFF/[PROJECTS]/VD_Patching/VOOP/PROTOTYPE Project/set.json'
 
 
 parser = argparse.ArgumentParser(description='arguments')
@@ -23,12 +20,6 @@ args = parser.parse_args()
 def json_write(voop_set, data):
     outfile = open(voop_set, 'w')
     json.dump(data, outfile)
-
-
-def get_pretty_print(json_object):
-    pretty = json.loads(json_object, sort_keys=True, indent=4, separators=(',', ': '))
-    print(pretty)
-    return pretty
 
 
 folder = args.input
@@ -75,6 +66,8 @@ while True:
                 window.fullscreen()
             elif next_frame & 0xFF == ord('g'):
                 window.non_fullscreen()
+            elif next_frame & 0xFF == ord('<'):
+                direction.direction = 0
             elif next_frame & 0xFF == ord('>'):
                 direction.direction = 1
             elif next_frame & 0xFF == ord('/'):
@@ -86,4 +79,3 @@ while True:
 
         still = 1 / 55
         time.sleep(float(still))
-    # clip.close()

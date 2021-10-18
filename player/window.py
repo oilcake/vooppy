@@ -5,16 +5,11 @@ class Window:
     window_name = 'Frame'
     window_width = 700
     window_height = (window_width / 16) * 9
-    # corner_x = window_width - (window_width / 2)
-    # corner_y = window_height - (window_height / 2)
     corner_x = 0
     corner_y = 0
 
     def __init__(self):
         cv2.namedWindow(self.window_name, cv2.WINDOW_NORMAL)
-        # corner_x = 1440 - 1440 / 2
-        # corner_y = 900 - 900 / 2
-        # Move it to (40,30)
         cv2.moveWindow(self.window_name,
                        int(self.corner_x),
                        int(self.corner_y))

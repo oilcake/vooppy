@@ -29,7 +29,7 @@ class Frame_watcher:
 
 
 class Direction:
-    direction = 1  # defaults to forward
+    direction = 1  # defaults to forward (0 is backward, 2 is palindrome)
 
     def __init__(self):
         pass
@@ -38,10 +38,30 @@ class Direction:
         self.direction = direction
 
     def move(self, ping, pattern):
+        self.ping = ping
+        if self.direction == 0:
+            self.pattern = pattern
+            self.backward()
+        if self.direction == 1:
+            self.pattern = pattern
+            self.forward()
         if self.direction == 2:
-            pattern = pattern * 2
-            print('ping', ping)
-            ping = abs(ping - 1)
-        boom = ping % pattern
-        position = boom / pattern
-        return position
+            self.pattern = pattern * 2
+            self.palindrome()
+        print('position', self.position)
+        return self.position
+
+    def render_position(self):
+        self.position = self.ping % self.pattern / self.pattern
+
+    def backward(self):
+        self.render_position()
+        self.position = abs(self.position - 1)
+
+    def forward(self):
+        self.render_position()
+        self.position = self.position
+
+    def palindrome(self):
+        self.render_position()
+        self.position = abs(self.position * 2 - 1)

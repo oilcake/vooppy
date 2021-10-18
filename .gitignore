@@ -160,3 +160,7 @@ here_samples/
 .DS_Store
 
 Link/Carabiner
+
+*.sublime*
+
+.idea/
