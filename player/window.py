@@ -2,6 +2,8 @@ import cv2
 
 
 class Window:
+
+    floating = 0
     window_name = 'Frame'
     window_width = 700
     window_height = (window_width / 16) * 9
@@ -33,13 +35,17 @@ class Window:
     def show(self, frame, dim: tuple):
         # Display the resulting frame
         cv2.imshow(self.window_name, self.resize(frame, dim))
+        # set window attributes
+        cv2.setWindowProperty(
+            self.window_name,
+            cv2.WND_PROP_TOPMOST, self.floating)
         return cv2.waitKey(1)
 
     def fullscreen(self):
         cv2.namedWindow(self.window_name, cv2.WINDOW_NORMAL)
         cv2.setWindowProperty(
             self.window_name,
-            cv2.WND_PROP_TOPMOST, 0)
+            cv2.WND_PROP_TOPMOST, self.floating)
 
         """Set disply window to either full screen or normal."""
         cv2.setWindowProperty(self.window_name,
@@ -49,12 +55,21 @@ class Window:
     def non_fullscreen(self):
         cv2.setWindowProperty(
             self.window_name,
-            cv2.WND_PROP_TOPMOST, 0)
-        cv2.setWindowProperty(
-            self.window_name,
-            cv2.WND_PROP_TOPMOST, 0)
+            cv2.WND_PROP_TOPMOST, self.floating)
 
         """Set disply window to either full screen or normal."""
         cv2.setWindowProperty(self.window_name,
                               cv2.WND_PROP_FULLSCREEN,
                               0)
+
+    # def get_floating(self):
+    #     return self._floating
+    #     # pass
+
+    # def set_floating(self, floating):
+    #     print('setting floating')
+    #     cv2.setWindowProperty(
+    #         self.window_name,
+    #         cv2.WND_PROP_TOPMOST, floating)
+
+    # floating = property(get_floating, set_floating)

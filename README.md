@@ -14,3 +14,12 @@ Run program
 ```
 python vooppy.com path/to/videos/folder # 'q' calls next random video from your folder 
 ```
+currently vooppy is controlled with a keyboard:
+'['
+']'
+'<'
+'>'
+'/'
+'q'
+'z'
+'0 - 4'

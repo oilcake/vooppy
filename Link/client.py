@@ -8,6 +8,10 @@ PORT = 17000        # The port used by the server
 
 class Client():
 
+    bpm = 0
+    beat = 0
+    start = 0
+
     def __init__(self):
         self.ping()
 

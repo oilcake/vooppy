@@ -4,7 +4,7 @@ import json
 
 from player.clip import Clip
 from player.window import Window
-from files.files import filter_files, filter_with_prefix, best_match, new_index
+from files.files import filter_files, filter_with_prefix, best_match, urn
 from Link.client import Client
 from Link.sync import Sync, Frame_watcher, Direction
 
@@ -35,7 +35,7 @@ prefix = ''
 files = list(filter_files(folder, prefix))
 
 
-index = new_index(files)
+index = urn(files)
 file = files[index]
 
 while True:
@@ -50,8 +50,10 @@ while True:
         frame = int(clip.framecount * position)
         if watcher.new_frame_is_not_equal_to(frame):
             next_frame = window.show(clip.play(frame), clip.dim)
-            if next_frame & 0xFF == ord('q'):
-                index = new_index(files)
+            if next_frame & 0xFF == ord('r'):  # reset
+                direction.off_set()
+            elif next_frame & 0xFF == ord('q'):
+                index = urn(files)
                 file = files[index]
                 break
             elif next_frame & 0xFF == ord('z'):
@@ -62,6 +64,10 @@ while True:
                 pattern = pattern * 2
             elif next_frame & 0xFF == ord(']'):
                 pattern = pattern / 2
+            # elif next_frame & 0xFF == ord('F'):
+            #     window.floating = 1
+            # elif next_frame & 0xFF == ord('G'):
+            #     window.floating = 0
             elif next_frame & 0xFF == ord('f'):
                 window.fullscreen()
             elif next_frame & 0xFF == ord('g'):

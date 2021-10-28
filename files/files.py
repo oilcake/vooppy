@@ -74,14 +74,21 @@ def folder(pre_folder):
 def best_match(file, folder):
     files = filter_files(folder, '')
     match = process.extract(file, files, limit=10)
-    diff_files = filter(lambda x: x != (file, 100), match)
-    files = list(map(unpack_tuple, diff_files))
-    index = new_index(list(files))
+    no_duplicates = filter(lambda x: x != (file, 100), match)
+    files = list(map(unpack_tuple, no_duplicates))
+    index = urn(list(files))
     name = files[index]
+    index_ = files.index(name)
+    print('first in is', index_)
     return name
 
 
-def new_index(files):
+def stripped_name(file):
+    return {'name': os.path.basename(file),
+            'path': file}
+
+
+def urn(files):
     index = 0
     rnd_index = index
     while rnd_index == index:
