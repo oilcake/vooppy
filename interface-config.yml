@@ -1,0 +1,3 @@
+hotkeys:
+  - r: resync
+  - q: random_file

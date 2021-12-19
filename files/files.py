@@ -5,8 +5,8 @@ import random
 from thefuzz import process
 
 
-EXCLUSIONS = ['.DS_Store', '.com.greenworldsoft.syncfolderspro']
-SUPPORTED = ['.mp4', '.mpg', '.mov', '.avi', '.wmv', '.mkv']
+EXCLUSIONS = [".DS_Store", ".com.greenworldsoft.syncfolderspro"]
+SUPPORTED = [".mp4", ".mpg", ".mov", ".avi", ".wmv", ".mkv"]
 
 
 def get_len(iter):
@@ -14,7 +14,7 @@ def get_len(iter):
 
 
 def unpack_tuple(sometuple):
-    (name, relevance) = (sometuple)
+    (name, relevance) = sometuple
     return str(name)
 
 
@@ -50,7 +50,7 @@ def filter_files(path, prefix):
         for file in files:
             if supported(file):
                 if file.startswith(prefix):
-                    yield(os.path.join(root, file))
+                    yield (os.path.join(root, file))
 
 
 def get_folders(path_to_dirs):
@@ -72,25 +72,14 @@ def folder(pre_folder):
 
 
 def best_match(file, folder):
-    files = filter_files(folder, '')
+    files = filter_files(folder, "")
     match = process.extract(file, files, limit=10)
     no_duplicates = filter(lambda x: x != (file, 100), match)
     files = list(map(unpack_tuple, no_duplicates))
-    index = urn(list(files))
-    name = files[index]
-    index_ = files.index(name)
-    print('first in is', index_)
+    name = random.choice(files)
+    print("first in is", name)
     return name
 
 
 def stripped_name(file):
-    return {'name': os.path.basename(file),
-            'path': file}
-
-
-def urn(files):
-    index = 0
-    rnd_index = index
-    while rnd_index == index:
-        index = random.randint(0, len(files) - 1)
-    return index
+    return {"name": os.path.basename(file), "path": file}

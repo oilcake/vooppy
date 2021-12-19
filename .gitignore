@@ -154,6 +154,7 @@ dmypy.json
 cython_debug/
 
 samples
+samples_micro
 
 here_samples/
 
@@ -164,3 +165,9 @@ Link/Carabiner
 *.sublime*
 
 .idea/
+
+*.go
+run.sh
+tmp_playlist.mpv
+play.sh
+*.sh

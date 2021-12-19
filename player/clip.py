@@ -1,7 +1,7 @@
 import cv2
 
 
-class Clip():
+class Clip:
     framecount = None
     dim = (0, 0)
 
@@ -21,9 +21,9 @@ class Clip():
         height = self.clip.get(4)  # float `height`
         self.dim = (width, height)
 
-    def play(self, frame_):
-        if not frame_ > self.framecount:
-            self.clip.set(cv2.CAP_PROP_POS_FRAMES, frame_)
+    def play(self, frame_number):
+        if not frame_number > self.framecount:
+            self.clip.set(cv2.CAP_PROP_POS_FRAMES, frame_number)
             ret, frame = self.clip.read()
             if ret:
                 return frame
@@ -41,32 +41,28 @@ class Clip():
                 cv2.imshow(self.window_name, frame)
                 cv2.setWindowProperty(
                     self.window_name,
-                    cv2.WND_PROP_TOPMOST, 1,
+                    cv2.WND_PROP_TOPMOST,
+                    1,
                 )
             else:
                 i = 0
-                print('ret is false')
+                print("ret is false")
             i += 1
             # Press Q on keyboard to  exit
-            if cv2.waitKey(int(25 / rate)) & 0xFF == ord('q'):
+            if cv2.waitKey(int(25 / rate)) & 0xFF == ord("q"):
                 break
         self.close()
 
     def find_duration(self):
         self.fps = int(self.clip.get(cv2.CAP_PROP_FPS))
 
-        # calculate dusration of the video
-        seconds = self.framecount / self.fps
-        self.duration = seconds * 4
+        # calculate duration of the video
+        milliseconds = self.framecount / self.fps
+        self.duration = milliseconds * 4
+        print(f"clip's duration is {self.duration} seconds")
 
     def __repr__(self):
-        return(self.filename)
+        return self.filename
 
     def close(self):
         self.clip.release()
-        # Closes all the frames
-        cv2.destroyAllWindows()
-
-    @staticmethod
-    def direction(rate):
-        pass

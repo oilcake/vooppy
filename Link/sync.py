@@ -7,19 +7,23 @@ class Sync:
 
     def __init__(self, bpm, time_signature):
         self.bpm = bpm
-        self.one_beat_ms = float(60 / self.bpm)  # one beat in milliseconds
+        self.one_beat_ms = float(60 / self.bpm)  # one beat in seconds
 
     def pattern(self, duration):
+        """
+        duration is a clip's length in milliseconds
+        """
         total_beats = duration // self.one_beat_ms
         bars = total_beats // self.time_signature[0]
-        print('bars', bars)
+        if bars < 1:
+            bars = 1
+        print("bars", bars)
         square = math.log(bars, 2)
-        print('rounded', pow(2, round(square)))
+        print("rounded", pow(2, round(square)))
         return pow(2, round(square))
 
 
 class Frame_watcher:
-
     def __init__(self):
         self.frame = None
 
