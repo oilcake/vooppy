@@ -8,7 +8,7 @@ PORT = 17000  # The port used by the server
 
 class NoLinkHostError(Exception):
     """
-    Carabiner is not open exception
+    "Carabiner is not open" exception
     """
 
     def __init__(self, error):
@@ -41,7 +41,7 @@ class Client:
         """Decodes a TCP message from Carabiner to python dictionary"""
         msg = msg.decode()
         msg_type = msg[: msg.index(" {")]
-        striped_msg = msg[msg.index("{") :]
+        striped_msg = msg[msg.index("{"):]
         decoded_msg = edn_format.loads(striped_msg)
 
         # The edn_format package does not return normal dam dicts

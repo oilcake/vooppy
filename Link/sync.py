@@ -1,4 +1,5 @@
 import math
+import random
 
 
 class Sync:
@@ -8,6 +9,7 @@ class Sync:
     def __init__(self, bpm, time_signature):
         self.bpm = bpm
         self.one_beat_ms = float(60 / self.bpm)  # one beat in seconds
+        self.one_bar_ms = self.one_beat_ms * self.time_signature[0]  # one bar in seconds
 
     def pattern(self, duration):
         """
@@ -19,11 +21,12 @@ class Sync:
             bars = 1
         print("bars", bars)
         square = math.log(bars, 2)
-        print("rounded", pow(2, round(square)))
-        return pow(2, round(square))
+        rounded = pow(2, round(square))
+        print("rounded", rounded)
+        return rounded
 
 
-class Frame_watcher:
+class FrameWatcher:
     def __init__(self):
         self.frame = None
 
@@ -32,9 +35,36 @@ class Frame_watcher:
         self.frame = frame
 
 
+class Change:
+    after = None
+    ping = None
+    bar_duration = (4, 4)
+
+    def detected_beat_change(self, ping):
+        self.ping = ping
+        before = int(self.ping)
+        if self.after is None:
+            self.after = before
+        if before != self.after:
+            return True
+        return False
+
+    def detected_bar_change(self, ping):
+        if self.detected_beat_change(ping):
+            beat = int(self.ping) % self.bar_duration[0]
+            print(f"beat number is {beat}")
+            return beat == 0
+        return False
+
+
 class Direction:
     direction = 1  # defaults to forward (0 is backward, 2 is palindrome)
     offset = 0
+    jump_to = 0
+    pattern = 0
+    ping = None
+    position = 0
+    detector = Change()
 
     def __init__(self):
         pass
@@ -57,7 +87,8 @@ class Direction:
         return self.position
 
     def render_position(self):
-        self.position = (self.ping - self.offset) % self.pattern / self.pattern
+        bars_now = self.ping - self.offset
+        self.position = (bars_now + self.jump_to) % self.pattern / self.pattern
 
     def backward(self):
         self.render_position()
@@ -72,4 +103,10 @@ class Direction:
         self.position = abs(self.position * 2 - 1)
 
     def off_set(self):
+        self.jump_to = 0
         self.offset = self.ping
+        print(self.offset)
+
+    def jump(self):
+        jump = random.randint(1, int(self.pattern))
+        self.jump_to = jump

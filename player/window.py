@@ -5,18 +5,20 @@ class Window:
 
     floating = 0
     window_name = "Frame"
-    window_width = 500
+    window_width = 800
     corner_x = 0
     corner_y = 0
     aspects = 16, 9
 
     def __init__(self):
+        cv2.namedWindow(self.window_name, cv2.WINDOW_AUTOSIZE)
         self.window_height = self.get_height_from_width(
             self.window_width,
             self.aspect_ratio(self.aspects)
         )
         self.window_shape = [self.window_width, self.window_height]
-        cv2.namedWindow(self.window_name, cv2.WINDOW_NORMAL)
+        # cv2.namedWindow(self.window_name, cv2.WINDOW_NORMAL)
+        cv2.namedWindow(self.window_name, cv2.WINDOW_GUI_EXPANDED)
         cv2.moveWindow(self.window_name, self.corner_x, self.corner_y)
         cv2.resizeWindow(
             self.window_name,
@@ -27,16 +29,19 @@ class Window:
         # cv2.setWindowProperty(self.window_name, cv2.WND_PROP_TOPMOST, 0)
 
     def rebuild(self, new_dims):
+        self.window_width, self.window_height = new_dims
         self.window_height = self.get_height_from_width(
             self.window_width,
             new_dims[0] / new_dims[1]
         )
+        cv2.namedWindow(self.window_name, cv2.WINDOW_NORMAL)
         cv2.moveWindow(self.window_name, self.corner_x, self.corner_y)
         cv2.resizeWindow(
             self.window_name,
             self.window_width,
             self.window_height
         )
+        cv2.namedWindow(self.window_name, cv2.WINDOW_AUTOSIZE)
 
     def get_resized_dim(self, clip_dimensions: tuple) -> tuple:
         width, height = clip_dimensions
@@ -49,7 +54,9 @@ class Window:
     def resize(self, frame, clip_dim: tuple):
         # resize image to window:
         cv2.moveWindow(self.window_name, int(self.corner_x), int(self.corner_y))
-        resized = cv2.resize(frame, clip_dim, interpolation=cv2.INTER_AREA)
+        # resized = cv2.resize(frame, clip_dim, interpolation=0)
+        # resized = cv2.resize(frame, clip_dim, interpolation=1)
+        resized = cv2.resize(frame, clip_dim, interpolation=cv2.INTER_NEAREST)
         return resized
 
     def center(self, img, dim: tuple):
@@ -100,6 +107,7 @@ class Window:
         return cv2.waitKey(1)
 
     def fullscreen(self) -> None:
+        cv2.setWindowProperty(self.window_name, cv2.WND_PROP_TOPMOST, 0)
         self.window_width = 1440
         new_dims = 1440, 900
         self.aspects = new_dims
@@ -109,11 +117,20 @@ class Window:
         cv2.setWindowProperty(self.window_name, cv2.WND_PROP_FULLSCREEN, 1)
 
     def non_fullscreen(self) -> None:
-        self.window_width = 600
-        new_dims = 600, 336
-        self.aspects = new_dims
+        cv2.setWindowProperty(self.window_name, cv2.WND_PROP_TOPMOST, 0)
+        cv2.setWindowProperty(self.window_name, cv2.WND_PROP_FULLSCREEN, 0)
+        self.window_width = 700
+        self.window_height = 336
+        new_dims = 1000, self.get_height_from_width(1000, self.aspect_ratio(self.aspects))
+        self.aspects = 16, 9
+        cv2.resizeWindow(
+            self.window_name,
+            self.window_width,
+            self.window_height
+        )
         self.rebuild(new_dims)
-        """Set display window to normal."""
+        self.__init__()
+        cv2.namedWindow(self.window_name, cv2.WINDOW_NORMAL)
         cv2.setWindowProperty(self.window_name, cv2.WND_PROP_FULLSCREEN, 0)
 
     @staticmethod

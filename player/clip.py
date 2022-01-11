@@ -1,12 +1,39 @@
+import json
+import os
+
 import cv2
+import librosa
+
+import sounddevice as sd
+import soundfile as sf
+
+from numba import jit
+
+
+DEFAULT_PREFS = {
+    "multiplier": 1,
+    "palindrome": 0,
+    "direction": 1,
+}
+
+
+def find_prefs(video, extension) -> str:
+    filename, file_extension = os.path.splitext(video)
+    name = filename + extension
+    return name
 
 
 class Clip:
     framecount = None
     dim = (0, 0)
+    fps = 0
+    duration = 0
+    audio = None
+    prefs = None
 
     def __init__(self, clip):
         self.filename = clip
+        # self.audio = Audio(self.filename)
         # open a stream
         self.clip = cv2.VideoCapture(self.filename)
         if not self.clip.isOpened():
@@ -16,9 +43,29 @@ class Clip:
         self.find_duration()
         self.get_dimensions()
 
+        self.prefs = find_prefs(self.filename, ".json")
+
+        # WARNING! Don't forget to delete this line
+        self.wipe_prefs()
+
+        if not os.path.isfile(self.prefs):
+            print('OOOPS')
+            self.wipe_prefs()
+
+    def wipe_prefs(self):
+        try:
+            os.remove(self.prefs)
+        except FileNotFoundError:
+            with open(self.prefs, "w") as prefs:
+                prefs.write(self.filename)
+                print("", file=prefs)
+                data = json.dumps(DEFAULT_PREFS)
+                prefs.write(data)
+                print("Done!")
+
     def get_dimensions(self):
-        width = self.clip.get(3)  # float `width`
-        height = self.clip.get(4)  # float `height`
+        width = int(self.clip.get(3))  # float `width`
+        height = int(self.clip.get(4))  # float `height`
         self.dim = (width, height)
 
     def play(self, frame_number):
@@ -28,41 +75,38 @@ class Clip:
             if ret:
                 return frame
 
-    def loop(self, rate):
-        i = 0
-        # Read until video is completed
-        while i >= 0 and i <= self.framecount:
-            print(i)
-            self.clip.set(cv2.CAP_PROP_POS_FRAMES, i)
-            # Capture frame-by-frame
-            ret, frame = self.clip.read()
-            if ret:
-                # Display the resulting frame
-                cv2.imshow(self.window_name, frame)
-                cv2.setWindowProperty(
-                    self.window_name,
-                    cv2.WND_PROP_TOPMOST,
-                    1,
-                )
-            else:
-                i = 0
-                print("ret is false")
-            i += 1
-            # Press Q on keyboard to  exit
-            if cv2.waitKey(int(25 / rate)) & 0xFF == ord("q"):
-                break
-        self.close()
-
     def find_duration(self):
         self.fps = int(self.clip.get(cv2.CAP_PROP_FPS))
-
         # calculate duration of the video
         milliseconds = self.framecount / self.fps
         self.duration = milliseconds * 4
-        print(f"clip's duration is {self.duration} seconds")
 
     def __repr__(self):
         return self.filename
 
     def close(self):
         self.clip.release()
+
+
+class Audio:
+    ratio = 1
+    soundfile = None
+    length = 0
+
+    def __init__(self, videofile: str) -> None:
+        prefs = find_prefs(videofile, ".aiff")
+        if os.path.isfile(prefs):
+            self.soundfile = prefs
+            self.data, self.fs = librosa.load(self.soundfile)
+            self.stretched = librosa.effects.time_stretch(self.data, self.ratio)
+            self.length = len(self.stretched)
+
+    def play(self, index):
+        if self.soundfile is not None:
+            # Extract data and sampling rate from file
+            # data, fs = sf.read(self.soundfile, dtype='float32')
+            # status = sd.get_status()
+            # print(status)
+            buffer = 8192
+            chunk = self.stretched[index:index + buffer]
+            sd.play(chunk, self.fs)

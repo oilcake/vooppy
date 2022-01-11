@@ -1,12 +1,52 @@
 import os
 import itertools
 import random
+import json
+import pprint
 
 from thefuzz import process
 
 
 EXCLUSIONS = [".DS_Store", ".com.greenworldsoft.syncfolderspro"]
-SUPPORTED = [".mp4", ".mpg", ".mov", ".avi", ".wmv", ".mkv"]
+SUPPORTED = [
+    # ".mp4",
+    # ".mpg",
+    ".mov",
+    # ".avi",
+    # ".wmv",
+    # ".mkv"
+    ]
+
+
+def add_to_set(filename):
+    voop_set = '/Volumes/STUFF/[PROJECTS]/VD_Patching/VOOP/PROTOTYPE Project/set.json'
+
+    with open(voop_set, "r+") as v:
+        data = json.load(v)
+        pprint.pprint(data)
+        x = len(data.keys())
+        print("x=", x)
+        addition = {filename: x}
+        print(addition)
+        # data.update(pprint.pformat(addition))
+        # v.seek(0)
+        # json.dump(data, v)
+
+
+def replace_set(filename):
+    voop_set = '/Volumes/STUFF/[PROJECTS]/VD_Patching/VOOP/PROTOTYPE Project/set.json'
+
+    with open(voop_set, "w") as v:
+
+        data = json.load(filename)
+        pprint.pprint(data)
+        # x = len(data.keys())
+        # print("x=", x)
+        # addition = {filename: x}
+        # print(addition)
+        # data.update(pprint.pformat(addition))
+        # v.seek(0)
+        # json.dump(data, v)
 
 
 def get_len(iter):
@@ -50,7 +90,7 @@ def filter_files(path, prefix):
         for file in files:
             if supported(file):
                 if file.startswith(prefix):
-                    yield (os.path.join(root, file))
+                    yield os.path.join(root, file)
 
 
 def get_folders(path_to_dirs):
