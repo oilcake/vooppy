@@ -5,9 +5,6 @@ import cv2
 import librosa
 
 import sounddevice as sd
-import soundfile as sf
-
-from numba import jit
 
 
 DEFAULT_PREFS = {
@@ -33,7 +30,6 @@ class Clip:
 
     def __init__(self, clip):
         self.filename = clip
-        # self.audio = Audio(self.filename)
         # open a stream
         self.clip = cv2.VideoCapture(self.filename)
         if not self.clip.isOpened():
@@ -49,7 +45,7 @@ class Clip:
         self.wipe_prefs()
 
         if not os.path.isfile(self.prefs):
-            print('OOOPS')
+            print("OOOPS")
             self.wipe_prefs()
 
     def wipe_prefs(self):
@@ -62,6 +58,18 @@ class Clip:
                 data = json.dumps(DEFAULT_PREFS)
                 prefs.write(data)
                 print("Done!")
+
+    def update_prefs(self, _prefs):
+        with open(self.prefs, "a") as prefs:
+            data = json.dumps(_prefs)
+            prefs.write(data)
+            print("Done!")
+
+    def read_prefs(self, _prefs):
+        with open(self.prefs, "r") as prefs:
+            data = json.dumps(_prefs)
+            prefs.write(data)
+            print("Done!")
 
     def get_dimensions(self):
         width = int(self.clip.get(3))  # float `width`
@@ -103,10 +111,6 @@ class Audio:
 
     def play(self, index):
         if self.soundfile is not None:
-            # Extract data and sampling rate from file
-            # data, fs = sf.read(self.soundfile, dtype='float32')
-            # status = sd.get_status()
-            # print(status)
             buffer = 8192
-            chunk = self.stretched[index:index + buffer]
+            chunk = self.stretched[index : index + buffer]
             sd.play(chunk, self.fs)

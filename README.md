@@ -12,14 +12,17 @@ conda activate pyvi # activates an environment
 ```
 Run program
 ```
-python vooppy.com path/to/videos/folder # 'q' calls next random video from your folder 
+python vooppy.com path/to/videos/folder
+('q' calls next random video from your folder)
 ```
-currently vooppy is controlled with a keyboard:
-'['
-']'
-'<'
-'>'
-'/'
-'q'
-'z'
+currently vooppy is controlled with a keyboard:<br/>
+'[' <br/>
+']'<br/>
+'r'<br/>
+'t'<br/>
+'<'<br/>
+'>'<br/>
+'/'<br/>
+'q'<br/>
+'z'<br/>
 '0 - 4'

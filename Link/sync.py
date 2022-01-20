@@ -9,7 +9,9 @@ class Sync:
     def __init__(self, bpm, time_signature):
         self.bpm = bpm
         self.one_beat_ms = float(60 / self.bpm)  # one beat in seconds
-        self.one_bar_ms = self.one_beat_ms * self.time_signature[0]  # one bar in seconds
+        self.one_bar_ms = (
+            self.one_beat_ms * self.time_signature[0]
+        )  # one bar in seconds
 
     def pattern(self, duration):
         """
